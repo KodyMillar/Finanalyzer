@@ -1,0 +1,24 @@
+services:
+  app:
+    image: ubuntu
+    command: <<EOF
+    apt-get update
+    apt-get upgrade -y
+    ufw allow 443
+    ufw allow 80
+    ufw enable
+    curl -fsSL https://fnm.vercel.app/install | bash
+    source ~/.bashrc
+    fnm use --install-if-missing 20
+    npm --prefix /EnterData/src/server.js run start
+    EOF
+    ports:
+      - 8000:8000
+    working_dir: /EnterData
+    volumes:
+      - ./src:/usr/share/app
+    networks:
+
+networks:
+  default:
+    driver: bridge
