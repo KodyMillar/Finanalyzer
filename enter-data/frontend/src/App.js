@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-// import logo from './logo.svg';
+import { addUserData } from './api/index';
 import './App.css';
 
 // function App() {
@@ -36,19 +36,25 @@ class App extends Component {
           .catch(err => console.log(err));
   }
   
-  componentWillMount() {
+  componentDidMount() {
       this.callAPI();
+  }
+
+  handleSubmit(e) {
+    const { target } = e;
+    e.preventDefault();
+    addUserData(target.querySelector('input[name = "investment"]').value);
   }
 
   render() {
       return (
           <div>
-              <p>{this.state.apiResponse}</p>
+            <h3>{this.state.apiResponse}</h3>
+            <form action="#" onSubmit={this.handleSubmit}>
+                <input type="text" placeholder="please enter" name="investment"/>
+                <input type="submit" value="submit" />
+            </form>
           </div>
-          // <form action="" method="post">
-          //     <input type="text" plaeholder="please enter" />
-          //     <input type="submit" value="submit" />
-          // </form>
       );
   }
 

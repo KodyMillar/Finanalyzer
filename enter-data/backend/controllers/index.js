@@ -10,18 +10,21 @@ module.exports = {
 
             connection.beginTransaction();
 
-            const query = `INSERT INTO investments VALUES ()`;
+            const query = `INSERT INTO investments (amount) VALUES 
+            (?)`;
 
-            connection.query(query, []);
+            connection.query(query, [body.investment]);
 
-            res.status(201).send({ message: "successfully added data to be analyzed"})
+            connection.commit();
+
+            res.status(201).send(`successfully added data to be analyzed`)
 
         } catch ({err, name, message}) {
             connection.rollback();
             console.error(err);
             console.error(name);
             console.error(message);
-            res.status(500).send({ err: "could not update database"})
+            res.status(500).send("could not update database")
         }
     }
 }
