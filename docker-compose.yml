@@ -1,5 +1,3 @@
-version: '3.8'
-
 services:
   enterdata:
     image: ubuntu
@@ -23,7 +21,7 @@ services:
       - 8000:8000
     working_dir: /usr/share/app
     volumes:
-      - ./enter-data:/usr/share/app
+      - ./enter-data:/usr/share/app/enter-data
     networks:
       - default
 
@@ -37,6 +35,3 @@ services:
 #       MYSQL_DATABASE: ${MYSQL_DATABASE}
 #       MYSQL_USER: ${MYSQL_USER}
 #       MYSQL_PASSWORD: ${MYSQL_PASSWORD}
-
-# volumes:
-#   mysql_db:
