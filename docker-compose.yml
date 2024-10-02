@@ -1,45 +1,42 @@
+version: '3.8'
+
 services:
-  EnterData:
+  enterdata:
     image: ubuntu
-    command: <<EOF
-    apt-get update -y
-    apt-get upgrade -y
-    ufw allow 443
-    ufw allow 80
-    ufw enable
-    curl -fsSL https://fnm.vercel.app/install | bash
-    source ~/.bashrc
-    fnm use --install-if-missing 20
-    npm --prefix /EnterData/src/server.js run start
-    EOF
+    command: >
+      bash -c "
+      apt-get update &&
+      apt-get upgrade -y &&
+      apt-get install -y curl unzip &&
+      curl -fsSL https://fnm.vercel.app/install | bash &&
+      source ~/.bashrc &&
+      export PATH=\"/root/.local/share/fnm:$PATH\" &&
+      eval \"$(fnm env)\" &&
+      fnm use --install-if-missing 20 &&
+      apt-get install -y npm &&
+      npm --prefix /usr/share/app/enter-data/backend install &&
+      npm --prefix /usr/share/app/enter-data/frontend install &&
+      npm --prefix /usr/share/app/enter-data/backend run start &&
+      npm --prefix /usr/share/app/enter-data/frontend run start
+      "
     ports:
       - 8000:8000
-    working_dir: /EnterData
+    working_dir: /usr/share/app
     volumes:
-      - ./src:/usr/share/app
+      - ./enter-data:/usr/share/app
     networks:
       - default
 
 # MySQL service
-  MySQL:
-    image: ubuntu
-    command: <<EOF
-    apt-get update -y
-    apt-get upgrade -y
-    ufw allow 3306
-    ufw enable
-    apt-get install mysql-server -y
-    mysql_secure_installation
-    EOF
-    ports:
-      - 3306:3306
-    working_dir: /SQL_Database
-    volumes:
-      - ./src:/usr/share/app
-    networks:
-      - default
+#   mysql:
+#     image: mysql:latest
+#     volumes:
+#       - mysql_db:/var/lib/mysql
+#     environment: 
+#       MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+#       MYSQL_DATABASE: ${MYSQL_DATABASE}
+#       MYSQL_USER: ${MYSQL_USER}
+#       MYSQL_PASSWORD: ${MYSQL_PASSWORD}
 
-
-networks:
-  default:
-    driver: bridge
+# volumes:
+#   mysql_db:
