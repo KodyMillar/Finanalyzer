@@ -4,7 +4,8 @@ const session = require('express-session');
 const app = express();
 const path = require('path');
 const indexRouter = require('./routes/index');
-const cors = require("cors");
+const cors = require('cors');
+const helmet = require('helmet');
 const { v4: uuidv4 } = require('uuid');
 const MemoryStore = require('memorystore')(session);
 
@@ -27,7 +28,28 @@ app.use(session({
     })
 }));
 
-app.use(cors());
+const whitelist = ['http://localhost:3000']
+
+const corsOptionsDelegate = {
+    origin: (origin, callback) => {
+        if (whitelist.indexOf(origin) !== -1) {
+            callback(null, true)
+        } else {
+            callback(new Error("Request not allowed"))
+        }
+    }
+}
+
+app.use((req, res, next) => {
+    cors(corsOptionsDelegate)(req, res, (err) => {
+      if (!req.headers.origin || whitelist.indexOf(req.headers.origin) === -1) {
+        return res.status(403).send('403 Forbidden'); // Send 403 for CORS violations
+      }
+      next();
+    });
+  });
+
+app.use(helmet());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, 'public')));

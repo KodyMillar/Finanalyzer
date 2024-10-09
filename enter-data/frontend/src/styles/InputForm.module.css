@@ -1,0 +1,76 @@
+.inputForm {
+    background-color: rgb(203, 216, 255);
+    border: solid black 2px;
+    display: flex;
+    flex-direction: column;
+    width: 25%;
+    height: 90%;
+    justify-content: space-evenly;
+    align-items: center;
+    padding: 0 5%;
+    margin: 0 auto;
+    font: inherit;
+    border-radius: 5px;
+}
+
+.fieldDiv {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    width: 90%;
+}
+
+.field {
+    color: white;
+    border: none;
+    border-radius: 4px;
+    background-color: rgb(58, 121, 173);
+    height: 125%;
+}
+
+.field:focus {
+    background-color: rgb(45, 128, 230);
+}
+
+.field:hover {
+    background-color: rgb(45, 128, 230);
+}
+
+.dropDown {
+    width: 80%;
+    color: white;
+    background-color: rgb(58, 121, 173);
+    font: inherit;
+    box-shadow: 1px 1px 4px black;
+    cursor: pointer;
+    border-radius: 4px;
+    border: none;
+}
+
+.dropDown:hover {
+    background-color: rgb(45, 128, 230);
+}
+
+.dropDown > option {
+    background-color: rgb(58, 121, 173);
+}
+
+input[type="submit"] {
+    background-color: rgb(58, 121, 173);
+    color: white;
+    border: 2px solid rgb(0, 0, 0);
+    border-radius: 4px;
+    width: 50%;
+    height: 10%;
+    cursor: pointer;
+    font: inherit;
+}
+
+input[type="submit"]:hover {
+    background-color: rgb(45, 128, 230);
+    transition: 0.8s ease-out all;
+}
+
+.durationField {
+    width: 35%;
+}
