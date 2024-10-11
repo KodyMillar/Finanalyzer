@@ -23,7 +23,18 @@ def get_user_average(conn, user_id):
     cursor.close()
     return result[0] if result else None
 
-def calculate_future_interest(connection, user_id, years):
+def calculate_future_value(principal, annual_contribution, interest_rate, years):
+    # Formula: A = P(1 + r/n)^(nt) + PMT * [(1 + r/n)^(nt) - 1] / (r/n)
+    # P is the initial principal, PMT is the annual contribution, r is the interest rate, n is the number of compounding periods per year, and t is the number of years.
+    n = 1  # Assuming annual compounding
+    future_value = principal * (1 + interest_rate / n) ** (n * years)
+    
+    for year in range(1, years + 1):
+        future_value += annual_contribution * (1 + interest_rate / n) ** (n * (years - year))
+    
+    return future_value
+
+def calculate_future_interest_with_contributions(connection, user_id, initial_investment, annual_contribution, years):
     cursor = connection.cursor()
     query = "SELECT interest_rate FROM interests WHERE user_id = %s ORDER BY date_entered DESC LIMIT 1"
     cursor.execute(query, (user_id,))
@@ -31,7 +42,7 @@ def calculate_future_interest(connection, user_id, years):
     cursor.close()
     if result is not None:
         current_interest_rate = result[0]
-        return current_interest_rate * years
+        return calculate_future_value(initial_investment, annual_contribution, current_interest_rate, years)
     else:
         return None
     
@@ -66,12 +77,23 @@ if __name__ == '__main__':
     conn = get_connection()
     if conn is not None:
         try:
-            print(f"User's average interest: {get_user_average(conn, 1)}")
-            print(f"Future interest: {calculate_future_interest(conn, 1, 5)}")
-            print(f"Grouped users by years: {group_users_by_years(conn, 5)}")
-            comparison = compare_with_others(conn, 1, 5)
+            # Prompt the user for input
+            initial_investment = float(input("Enter the initial investment amount: "))
+            annual_contribution = float(input("Enter the annual contribution: "))
+            years = int(input("Enter the number of years for the investment: "))
+            
+            # Example user_id
+            user_id = 1
+            
+            future_value = calculate_future_interest_with_contributions(conn, user_id, initial_investment, annual_contribution, years)
+            if future_value is not None:
+                print(f"Future value after {years} years: {future_value}")
+            else:
+                print("No interest rate data available for this user.")
+            
+            comparison = compare_with_others(conn, user_id, years)
             if comparison:
-                print(f"User average: {comparison['user_avg']}, Group average: {comparison['group_avg']}")
+                print(f"User average interest rate: {comparison['user_avg']}, Group average interest rate: {comparison['group_avg']}")
             else:
                 print("No comparison data available.")
         finally:
