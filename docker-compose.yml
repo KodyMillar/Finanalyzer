@@ -1,40 +1,52 @@
 services:
-  app:
-    image: ubuntu
-    # command: <<EOF
-    # apt-get update
-    # apt-get upgrade -y
-    # ufw allow 443
-    # ufw allow 80
-    # ufw enable
-    # curl -fsSL https://fnm.vercel.app/install | bash
-    # source ~/.bashrc
-    # fnm use --install-if-missing 20
-    # npm --prefix /EnterData/src/server.js run start
-    # EOF
-    command: <<EOF
-      bash -c
+  frontend:
+    image: node:20
+    build: /enter-data/frontend/
+    command: |
+      bash -c "
       apt-get update &&
       apt-get upgrade -y &&
-      apt-get install -y curl unzip &&
-      curl -fsSL https://fnm.vercel.app/install | bash &&
-      source ~/.bashrc &&
-      export PATH=/root/.local/share/fnm:$PATH &&
-      eval $(fnm env) &&
-      fnm use --install-if-missing 20 &&
-      apt-get install -y npm &&
-      npm --prefix /usr/share/app/enter-data/backend install &&
       npm --prefix /usr/share/app/enter-data/frontend install &&
-      npm --prefix /usr/share/app/enter-data/backend run start &&
+      npm --prefix /usr/share/app/enter-data/frontend run build &&
       npm --prefix /usr/share/app/enter-data/frontend run start
-      EOF
+      "
     ports:
-      - 8000:8000
-    working_dir: /EnterData
+      - 80:3000
+    working_dir: /usr/share/app/enter-data
     volumes:
-      - ./src:/usr/share/app
+      - ./enter-data/frontend/:/usr/share/app/enter-data/frontend/
     networks:
+      - default
+  backend:
+    image: node:20
+    command: |
+      bash -c "
+      apt-get update &&
+      apt-get upgrade -y &&
+      npm --prefix /usr/share/app/enter-data/backend install &&
+      npm --prefix /usr/share/app/enter-data/backend run start
+      "
+    ports:
+      - 8080:8080
+    working_dir: /usr/share/app/enter-data
+    volumes:
+      - ./enter-data/backend:/usr/share/app/enter-data/backend
+    networks:
+      - default
+  mongodb:
+    image: mongodb/mongodb-community-server:latest
+    command:
+    working_dir: /
+    volumes:
+      - mongodb_data:/data/db
+    networks:
+      - database
 
 networks:
   default:
     driver: bridge
+  database:
+    driver: custom-driver
+
+volumes:
+  mongodb_data:

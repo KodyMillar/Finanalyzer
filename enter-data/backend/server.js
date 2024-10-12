@@ -28,7 +28,7 @@ app.use(session({
     })
 }));
 
-const whitelist = ['http://localhost:3000']
+const whitelist = ['http://localhost']
 
 const corsOptionsDelegate = {
     origin: (origin, callback) => {
