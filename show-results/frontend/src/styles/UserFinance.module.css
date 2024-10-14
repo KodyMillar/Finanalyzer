@@ -1,0 +1,6 @@
+.investmentComponent {
+    display: grid;
+    grid-template-columns: 30vw 30vw;
+    grid-auto-rows: 25vh;
+    width: 40vw;
+}

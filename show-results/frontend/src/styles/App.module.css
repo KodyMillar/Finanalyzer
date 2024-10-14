@@ -1,0 +1,13 @@
+.app {
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.appHeader {
+  min-height: 10vh;
+  font-size: calc(10px + 2vmin);
+  color: black;
+  margin-top: 5%;
+}

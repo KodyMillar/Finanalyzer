@@ -1,0 +1,21 @@
+.investmentBlock {
+    background-color: rgb(191, 234, 255);
+    border: 3px solid rgb(22, 22, 78);
+    border-radius: 12px;
+    width: 50%;
+    height: 150%;
+    box-shadow: 0 2px 3px;
+}
+
+.investmentBlockDate {
+    background-color: beige;
+    border-bottom: 2px solid rgb(63, 63, 63);
+    margin: 0;
+    border-radius: 12px 12px 0 0;
+}
+
+.investmentBlock > h4 {
+    margin: 5%;
+    border-bottom: 1px solid grey;
+    padding-bottom: 2%;
+}
