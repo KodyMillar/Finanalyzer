@@ -1,37 +1,37 @@
 services:
-  enterdata:
-    image: ubuntu
-    command: >
+  show-results-frontend:
+    image: node:20
+    command: |
       bash -c "
-      apt-get update &&
-      apt-get upgrade -y &&
-      apt-get install -y curl unzip &&
-      curl -fsSL https://fnm.vercel.app/install | bash &&
-      source ~/.bashrc &&
-      export PATH=\"/root/.local/share/fnm:$PATH\" &&
-      eval \"$(fnm env)\" &&
-      fnm use --install-if-missing 20 &&
-      apt-get install -y npm &&
-      npm --prefix /usr/share/app/enter-data/backend install &&
-      npm --prefix /usr/share/app/enter-data/frontend install &&
-      npm --prefix /usr/share/app/enter-data/backend run start &&
-      npm --prefix /usr/share/app/enter-data/frontend run start
+      sudo apt update &&
+      sudo apt upgrade -y
+      npm --prefix=./frontend install &&
+      npm --prefix=./frontend run start
       "
+    working_dir: /usr/share/app/show-results
     ports:
-      - 8000:8000
-    working_dir: /usr/share/app
+      - 3010:3010
     volumes:
-      - ./enter-data:/usr/share/app/enter-data
+      - ./show-results/frontend:./frontend
+    networks:
+      - default
+  show-results-backend:
+    image: node:20
+    command: |
+      bash -c "
+      sudo apt update &&
+      sudo apt upgrade -y
+      npm --prefix=./backend install &&
+      npm --prefix=./backend run start
+      "
+    working_dir: /usr/share/app/show-results
+    ports:
+      - 8090:8090
+    volumes:
+      - ./show-results/backend:./backend
     networks:
       - default
 
-# MySQL service
-#   mysql:
-#     image: mysql:latest
-#     volumes:
-#       - mysql_db:/var/lib/mysql
-#     environment: 
-#       MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
-#       MYSQL_DATABASE: ${MYSQL_DATABASE}
-#       MYSQL_USER: ${MYSQL_USER}
-#       MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+networks:
+  default:
+    driver: bridge
