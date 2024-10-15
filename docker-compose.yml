@@ -1,4 +1,19 @@
+version: '3.8'
+
 services:
+  mysql:
+    image: mysql:latest
+    volumes:
+      - mysql_db:/var/lib/mysql
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+    environment: 
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+    networks:
+      - default
+
   frontend:
     image: node:20
     build: /enter-data/frontend/
@@ -17,6 +32,7 @@ services:
       - ./enter-data/frontend/:/usr/share/app/enter-data/frontend/
     networks:
       - default
+
   backend:
     image: node:20
     command: |
@@ -26,27 +42,14 @@ services:
       npm --prefix /usr/share/app/enter-data/backend install &&
       npm --prefix /usr/share/app/enter-data/backend run start
       "
-    ports:
-      - 8080:8080
     working_dir: /usr/share/app/enter-data
     volumes:
-      - ./enter-data/backend:/usr/share/app/enter-data/backend
+      - ./enter-data/backend/:/usr/share/app/enter-data/backend/
     networks:
       - default
-  mongodb:
-    image: mongodb/mongodb-community-server:latest
-    command:
-    working_dir: /
-    volumes:
-      - mongodb_data:/data/db
-    networks:
-      - database
+
+volumes:
+  mysql_db:
 
 networks:
   default:
-    driver: bridge
-  database:
-    driver: custom-driver
-
-volumes:
-  mongodb_data:
