@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 
 const db_host = process.env.DB_HOST
-const db_port = process.env.db_port
+const db_port = process.env.DB_PORT
 
 connectDB = async () => {
     try {

@@ -11,8 +11,10 @@ services:
     working_dir: /usr/share/app/show-results
     ports:
       - 3010:3010
+    expose:
+      - 3010
     volumes:
-      - ./show-results/frontend:./frontend
+      - ./show-results/frontend:/usr/share/app/show-results/frontend
     networks:
       - default
   show-results-backend:
@@ -25,13 +27,32 @@ services:
       npm --prefix=./backend run start
       "
     working_dir: /usr/share/app/show-results
+    environment:
+      DB_HOST: mongodb
+      DB_PORT: 27017
     ports:
       - 8090:8090
     volumes:
-      - ./show-results/backend:./backend
+      - ./show-results/backend:/usr/share/app/show-results/backend
     networks:
       - default
+  mongodb-db:
+    image: mongodb/mongodb-community-server:latest
+    container_name: mongodb
+    working_dir: /
+    ports:
+     - 27017:27017
+    volumes:
+      - mongodb_data:/data/db
+    networks:
+      - database
 
 networks:
   default:
     driver: bridge
+  database:
+    driver: bridge
+    internal: true
+
+volumes:
+  mongodb_data:
