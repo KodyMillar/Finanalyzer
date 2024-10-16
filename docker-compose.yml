@@ -1,19 +1,18 @@
 services:
-  mysql:
-    image: mysql:latest
-    ports:
-      - 9000:3306
-      - 3306:3306
-    volumes:
-      - mysql_db:/var/lib/mysql
-      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
-    environment: 
-      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
-      MYSQL_DATABASE: ${MYSQL_DATABASE}
-      MYSQL_USER: ${MYSQL_USER}
-      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
-    networks:
-      - default
+  # mysql:
+  #   image: mysql:latest
+  #   ports:
+  #     - 9000:3306
+  #   volumes:
+  #     - mysql_db:/var/lib/mysql
+  #     - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+  #   environment: 
+  #     MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+  #     MYSQL_DATABASE: ${MYSQL_DATABASE}
+  #     MYSQL_USER: ${MYSQL_USER}
+  #     MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+  #   networks:
+  #     - default
 
   show-results-frontend:
     image: node:20
@@ -45,8 +44,9 @@ services:
       "
     working_dir: /usr/share/app/show-results
     environment:
-      DB_HOST: mongodb
+      DB_HOST: 127.0.0.1
       DB_PORT: 27017
+      INVESTMENT_ENUM: ${INVESTMENT_ENUM}
     ports:
       - 8090:8090
     volumes:
@@ -54,16 +54,16 @@ services:
     networks:
       - default
 
-  mongodb-db:
-    image: mongodb/mongodb-community-server:latest
-    container_name: mongodb
-    working_dir: /
-    ports:
-      - 27017:27017
-    volumes:
-      - mongodb_data:/data/db
-    networks:
-      - database
+  # mongodb-db:
+  #   image: mongodb/mongodb-community-server:latest
+  #   container_name: mongodb
+  #   working_dir: /
+  #   ports:
+  #     - 27017:27017
+  #   volumes:
+  #     - mongodb_data:/data/db
+  #   networks:
+  #     - database
 
   finanlyzer:
     image: node:20
@@ -85,23 +85,23 @@ services:
     networks:
       - default
 
-  input-backend:
-    image: node:20
-    container_name: input_backend
-    command: |
-      bash -c "
-      apt-get update &&
-      apt-get upgrade -y &&
-      npm --prefix /usr/share/app/enter-data/backend install &&
-      npm --prefix /usr/share/app/enter-data/backend run start
-      "
-    working_dir: /usr/share/app/enter-data
-    ports:
-      - 8080:8080
-    volumes:
-      - ./enter-data/backend/:/usr/share/app/enter-data/backend/
-    networks:
-      - default
+  # input-backend:
+  #   image: node:20
+  #   container_name: input_backend
+  #   command: |
+  #     bash -c "
+  #     apt-get update &&
+  #     apt-get upgrade -y &&
+  #     npm --prefix /usr/share/app/enter-data/backend install &&
+  #     npm --prefix /usr/share/app/enter-data/backend run start
+  #     "
+  #   working_dir: /usr/share/app/enter-data
+  #   ports:
+  #     - 8080:8080
+  #   volumes:
+  #     - ./enter-data/backend/:/usr/share/app/enter-data/backend/
+  #   networks:
+  #     - default
 
 networks:
   default:
@@ -110,6 +110,6 @@ networks:
     driver: bridge
     internal: true
 
-volumes:
-  mysql_db:
-  mongodb_data:
+# volumes:
+  # mysql_db:
+  # mongodb_data:
