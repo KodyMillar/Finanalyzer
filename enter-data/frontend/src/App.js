@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { addUserData } from './api/index';
 import './App.css';
+import InputForm from './components/InputForm';
 
 // function App() {
 //   return (
@@ -48,12 +49,9 @@ class App extends Component {
 
   render() {
       return (
-          <div>
+          <div className="App">
             <h3>{this.state.apiResponse}</h3>
-            <form action="#" onSubmit={this.handleSubmit}>
-                <input type="text" placeholder="please enter" name="investment"/>
-                <input type="submit" value="submit" />
-            </form>
+            <InputForm onSubmit={this.handleSubmit} />
           </div>
       );
   }
