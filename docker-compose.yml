@@ -1,5 +1,4 @@
 version: '3.8'
-
 services:
   mysql:
     image: mysql:latest
@@ -13,16 +12,75 @@ services:
       MYSQL_PASSWORD: ${MYSQL_PASSWORD}
     networks:
       - default
-
-  frontend:
+  show-results-frontend:
     image: node:20
+    command: |
+      bash -c "
+      sudo apt update &&
+      sudo apt upgrade -y
+      npm --prefix=./frontend install &&
+      npm --prefix=./frontend run start
+      "
+    working_dir: /usr/share/app/show-results
+    ports:
+      - 3010:3010
+    expose:
+      - 3010
+    volumes:
+      - ./show-results/frontend:/usr/share/app/show-results/frontend
+    networks:
+      - default
+  show-results-backend:
+    image: node:20
+    command: |
+      bash -c "
+      sudo apt update &&
+      sudo apt upgrade -y
+      npm --prefix=./backend install &&
+      npm --prefix=./backend run start
+      "
+    working_dir: /usr/share/app/show-results
+    environment:
+      DB_HOST: mongodb
+      DB_PORT: 27017
+    ports:
+      - 8090:8090
+    volumes:
+      - ./show-results/backend:/usr/share/app/show-results/backend
+    networks:
+      - default
+  mongodb-db:
+    image: mongodb/mongodb-community-server:latest
+    container_name: mongodb
+    working_dir: /
+    ports:
+     - 27017:27017
+    volumes:
+      - mongodb_data:/data/db
+    networks:
+      - database
+
+<<<<<<< HEAD
+networks:
+  default:
+    driver: bridge
+  database:
+    driver: bridge
+    internal: true
+
+volumes:
+  mongodb_data:
+=======
+  finanlyzer:
+    image: node:20
+    container_name: finanylizer
     build: /enter-data/frontend/
+      # npm --prefix /usr/share/app/enter-data/frontend run build &&
     command: |
       bash -c "
       apt-get update &&
       apt-get upgrade -y &&
       npm --prefix /usr/share/app/enter-data/frontend install &&
-      npm --prefix /usr/share/app/enter-data/frontend run build &&
       npm --prefix /usr/share/app/enter-data/frontend run start
       "
     ports:
@@ -33,8 +91,9 @@ services:
     networks:
       - default
 
-  backend:
+  input-backend:
     image: node:20
+    container_name: input_backend
     command: |
       bash -c "
       apt-get update &&
@@ -43,6 +102,8 @@ services:
       npm --prefix /usr/share/app/enter-data/backend run start
       "
     working_dir: /usr/share/app/enter-data
+    ports:
+      - 8080:8080
     volumes:
       - ./enter-data/backend/:/usr/share/app/enter-data/backend/
     networks:
@@ -53,3 +114,4 @@ volumes:
 
 networks:
   default:
+>>>>>>> main

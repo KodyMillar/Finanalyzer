@@ -28,26 +28,28 @@ app.use(session({
     })
 }));
 
-const whitelist = ['http://localhost']
+// const whitelist = ['http://finanylizer:3000', 'http://input-backend:8080', 'http://localhost:8080', 'http://localhost:3000']
 
-const corsOptionsDelegate = {
-    origin: (origin, callback) => {
-        if (whitelist.indexOf(origin) !== -1) {
-            callback(null, true)
-        } else {
-            callback(new Error("Request not allowed"))
-        }
-    }
-}
+// const corsOptionsDelegate = {
+//     origin: (origin, callback) => {
+//         if (whitelist.indexOf(origin) !== -1) {
+//             callback(null, true)
+//         } else {
+//             callback(new Error("Request not allowed"))
+//         }
+//     }
+// }
 
-app.use((req, res, next) => {
-    cors(corsOptionsDelegate)(req, res, (err) => {
-      if (!req.headers.origin || whitelist.indexOf(req.headers.origin) === -1) {
-        return res.status(403).send('403 Forbidden'); // Send 403 for CORS violations
-      }
-      next();
-    });
-  });
+app.use(cors());
+
+// app.use((req, res, next) => {
+//     cors(corsOptionsDelegate)(req, res, (err) => {
+//       if (!req.headers.origin || whitelist.indexOf(req.headers.origin) === -1) {
+//         return res.status(403).send('403 Forbidden'); // Send 403 for CORS violations
+//       }
+//       next();
+//     });
+//   });
 
 app.use(helmet());
 app.use(express.json());
