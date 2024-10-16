@@ -1,37 +1,59 @@
+version: '3.8'
+
 services:
-  enterdata:
-    image: ubuntu
-    command: >
-      bash -c "
-      apt-get update &&
-      apt-get upgrade -y &&
-      apt-get install -y curl unzip &&
-      curl -fsSL https://fnm.vercel.app/install | bash &&
-      source ~/.bashrc &&
-      export PATH=\"/root/.local/share/fnm:$PATH\" &&
-      eval \"$(fnm env)\" &&
-      fnm use --install-if-missing 20 &&
-      apt-get install -y npm &&
-      npm --prefix /usr/share/app/enter-data/backend install &&
-      npm --prefix /usr/share/app/enter-data/frontend install &&
-      npm --prefix /usr/share/app/enter-data/backend run start &&
-      npm --prefix /usr/share/app/enter-data/frontend run start
-      "
-    ports:
-      - 8000:8000
-    working_dir: /usr/share/app
+  mysql:
+    image: mysql:latest
     volumes:
-      - ./enter-data:/usr/share/app/enter-data
+      - mysql_db:/var/lib/mysql
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+    environment: 
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
     networks:
       - default
 
-# MySQL service
-#   mysql:
-#     image: mysql:latest
-#     volumes:
-#       - mysql_db:/var/lib/mysql
-#     environment: 
-#       MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
-#       MYSQL_DATABASE: ${MYSQL_DATABASE}
-#       MYSQL_USER: ${MYSQL_USER}
-#       MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+  finanlyzer:
+    image: node:20
+    container_name: finanylizer
+    build: /enter-data/frontend/
+      # npm --prefix /usr/share/app/enter-data/frontend run build &&
+    command: |
+      bash -c "
+      apt-get update &&
+      apt-get upgrade -y &&
+      npm --prefix /usr/share/app/enter-data/frontend install &&
+      npm --prefix /usr/share/app/enter-data/frontend run start
+      "
+    ports:
+      - 80:3000
+    working_dir: /usr/share/app/enter-data
+    volumes:
+      - ./enter-data/frontend/:/usr/share/app/enter-data/frontend/
+    networks:
+      - default
+
+  input-backend:
+    image: node:20
+    container_name: input_backend
+    command: |
+      bash -c "
+      apt-get update &&
+      apt-get upgrade -y &&
+      npm --prefix /usr/share/app/enter-data/backend install &&
+      npm --prefix /usr/share/app/enter-data/backend run start
+      "
+    working_dir: /usr/share/app/enter-data
+    ports:
+      - 8080:8080
+    volumes:
+      - ./enter-data/backend/:/usr/share/app/enter-data/backend/
+    networks:
+      - default
+
+volumes:
+  mysql_db:
+
+networks:
+  default:
