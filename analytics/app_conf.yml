@@ -1,0 +1,9 @@
+version: 1
+datastore:
+  host: localhost
+  port: 9000
+  db: finance_analytics
+  user: ACIT3495
+  password: Password123
+scheduler:
+  period_sec: 5

@@ -1,12 +1,26 @@
 import mysql.connector
+import yaml
+import connexion
+import logging
+import logging.config
+from apscheduler.schedulers.background import BackgroundScheduler
+from datetime import datetime, timedelta, timezone
+from statistics import mean
+from connexion import NoContent
+import time
+
+with open('app_conf.yml', 'r') as f:
+    app_config = yaml.safe_load(f.read())
 
 def get_connection():
     try:
         conn = mysql.connector.connect(
-            host='localhost',
-            user='user',
-            password='password',
-            database='analytics'
+            host=app_config['datastore']['host'],
+            port=app_config['datastore']['port'],
+            # user=db_config['datastore']['user'],
+            user="root",
+            password=app_config['datastore']['password'],
+            database=app_config['datastore']['db']
         )
         if conn.is_connected():
             print('Connected to MySQL database')
@@ -14,6 +28,36 @@ def get_connection():
     except Exception as e:
         print(f'Error: {e}')
         return None
+
+def get_user_investment():
+    conn = get_connection()
+    
+    current_time = int(time.time() * 1000)
+    previous_time = current_time - 5000
+
+    query = 'SELECT userid, investment_amount, annual_contribution, duration, risk, years \
+            FROM investments \
+            WHERE date_created < %s AND date_created > %s'
+
+    # Get the current time in milliseconds
+    
+    cursor = conn.cursor()
+    cursor.execute(query, (current_time, previous_time))
+    result = cursor.fetchall()
+    cursor.close()
+
+    for row in cursor.fetchall():
+        calculate_future_interest_with_contributions(row['userId'], row['investment_amount'], row['annual_contribution'], row['duration'])
+
+
+def init_scheduler():
+	sched = BackgroundScheduler(daemon=True)
+	sched.add_job(get_user_investment,
+				  'interval',
+				  seconds=app_config['scheduler']['period_sec'])
+	sched.start()
+
+    
 
 def get_user_average(conn, user_id):
     cursor = conn.cursor()
@@ -75,15 +119,18 @@ def compare_with_others(connection, user_id, years):
 
 if __name__ == '__main__':
     conn = get_connection()
+    init_scheduler()
     if conn is not None:
         try:
             # Prompt the user for input
-            initial_investment = float(input("Enter the initial investment amount: "))
-            annual_contribution = float(input("Enter the annual contribution: "))
-            years = int(input("Enter the number of years for the investment: "))
+            # initial_investment = float(input("Enter the initial investment amount: "))
+            # annual_contribution = float(input("Enter the annual contribution: "))
+            # years = int(input("Enter the number of years for the investment: "))
             
             # Example user_id
-            user_id = 1
+            query = 'SELECT userid, investment_amount, annual_contribution, duration, risk, years \
+                    FROM '
+            conn.cursor()
             
             future_value = calculate_future_interest_with_contributions(conn, user_id, initial_investment, annual_contribution, years)
             if future_value is not None:

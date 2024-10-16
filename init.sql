@@ -6,6 +6,7 @@ CREATE TABLE IF NOT EXISTS investment (
     investment_amount decimal(20,2) NOT NULL,
     annual_contribution decimal(20,2) NOT NULL,
     duration integer NOT NULL,
+    interest_rate decimal(4, 2) NOT NULL,
     risk enum('Low Risk', 'Conservative', 'Balanced', 'High Risk', 'Aggressive') NOT NULL,
-    years integer NOT NULL
+    date_created VARCHAR(20)
 );

@@ -8,12 +8,19 @@ module.exports = {
 
         try {
 
+            const userId = req.session.userId;
+            const investmentAmount = body.investment;
+            const annualContribution = body.annualContribution;
+            const duration = body.duration;
+            const risk = body.risk;
+            const years = body.years;
+
             connection.beginTransaction();
 
-            const query = `INSERT INTO investments (amount) VALUES 
-            (?)`;
+            const query = `INSERT INTO investments (userid, investment_amount, annual_contribution, duration, risk, years) VALUES 
+            (?, ?, ?, ?, ?, ?)`;
 
-            connection.query(query, [body.investment]);
+            connection.query(query, [userId, investmentAmount, annualContribution, duration, risk, years]);
 
             connection.commit();
 
