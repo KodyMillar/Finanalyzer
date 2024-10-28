@@ -11,5 +11,6 @@ The technologies we used are:
 - MongoDB to store analytics and computed data
 - MySQL to store user financial input as well as usernames and passwords
 - Python to perform data analytics from MySQL data and store analytics in MongoDB database
+- OAuth on Node.js to authorize users to view financial statistics and calculations
 - Docker for containerization of services (used images from Dockerfiles in docker-compose file) 
 - Kubernetes (not implemented but had planned to use to create scalability, availability, and fault-tolerance)
