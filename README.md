@@ -5,12 +5,14 @@ Finanlyzer is a financial analytics web application that allows users to input f
 Finanylizer uses a microservices architecture and separates the frontend from the backend in order to create a decoupled architecture. The services communicate with each other through REST API with HTTP and in some cases with a scheduler to create a soft state. 
 
 The technologies we used are:
-- React for the frontend
-- Node.js for the backend
-- Express.js for the web framework
-- MongoDB to store analytics and computed data
-- MySQL to store user financial input as well as usernames and passwords
-- Python to perform data analytics from MySQL data and store analytics in MongoDB database
-- Google OAuth API on Node.js to authorize users to view financial statistics and calculations
-- Docker for containerization of services (used images from Dockerfiles in docker-compose file) 
-- Kubernetes (not implemented but had planned to use to create scalability, availability, and fault-tolerance)
+- **React** for the frontend
+- **Node.js** for the backend
+- **Express.js** for the web framework
+- **MongoDB** to store analytics and computed data
+- **MySQL** to store user financial input as well as usernames and passwords
+- **Python** to perform data analytics from MySQL data and store analytics in MongoDB database
+- **Google OAuth API** on Node.js to authorize users to view financial statistics and calculations
+- **Docker** for containerization of services (used images from Dockerfiles in docker-compose file) 
+- **Kubernetes** to create dynamic scalability, availability, persistent storage, and fault-tolerance
+- **AWS EKS** for the Kubernetes cluster
+- **AWS EBS** as the storage class for dynamic persistent storage
