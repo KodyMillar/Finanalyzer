@@ -1,0 +1,74 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: enter-data-backend-deployment
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app_name: finanylizer
+      tier: backend
+      environment: production
+      service_name: enter-data-backend
+  minReadySeconds: 10
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 1
+      maxSurge: 1
+  template:
+    metadata:
+      labels:
+        app_name: finanylizer
+        tier: backend
+        environment: production
+        service_name: enter-data-backend
+    spec:
+      containers:
+        - name: enter-data-backend
+          image: kodymills395/enter-data-backend:v4
+          ports:
+            - containerPort: 8080
+          resources:
+            requests:
+              memory: 256Mi
+              cpu: 250m
+            limits:
+              memory: 512Mi
+              cpu: 500m
+          env:
+            - name: PORT
+              valueFrom:
+                secretKeyRef:
+                  name: backend-env
+                  key: port
+            - name: SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: backend-env
+                  key: secret
+            - name: DB_HOST
+              valueFrom:
+                secretKeyRef:
+                  name: mysql-credentials
+                  key: db-host
+            - name: DB_PORT
+              valueFrom:
+                secretKeyRef:
+                  name: mysql-credentials
+                  key: db-port
+            - name: DB_USER
+              valueFrom:
+                secretKeyRef:
+                  name: mysql-credentials
+                  key: db-user
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: mysql-credentials
+                  key: db-password
+            - name: DB_NAME
+              valueFrom:
+                secretKeyRef:
+                  name: mysql-credentials
+                  key: db-name

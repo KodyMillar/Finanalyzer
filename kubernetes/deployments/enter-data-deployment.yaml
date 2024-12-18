@@ -1,0 +1,49 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: enter-data-deployment
+spec:
+  replicas: 3
+  selector:
+    matchLabels: # match these to the labels in the pod yaml you're targeting
+      app_name: finanylizer
+      environment: production
+      tier: frontend
+      service_name: enter-data-frontend
+  minReadySeconds: 10
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 1
+      maxSurge: 1
+  template:
+    metadata:
+      labels: # always same labels as matchLabels
+        app_name: finanylizer
+        environment: production
+        tier: frontend
+        service_name: enter-data-frontend
+    spec:
+      containers: # the container from the pod
+        - name: enter-data-frontend
+          image: kodymills395/enter-data-frontend:v4
+          resources:
+            requests:
+              cpu: 500m
+              memory: 500Mi
+            limits:
+              cpu: 1
+              memory: 1G
+          ports:
+            - containerPort: 3000
+          env:
+            - name: REACT_APP_BACKEND_HOST
+              valueFrom:
+                configMapKeyRef:
+                  name: backend-endpoint
+                  key: backend-host
+            - name: REACT_APP_BACKEND_PORT
+              valueFrom:
+                configMapKeyRef:
+                  name: backend-endpoint
+                  key: backend-port

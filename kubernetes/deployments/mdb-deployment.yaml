@@ -1,0 +1,64 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mdb-deploy
+  labels:
+    app_name: finanylizer
+    service_name: mdb-svc
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app_name: finanylizer
+      tier: database
+      environment: production
+      service_name: mdb-svc
+  minReadySeconds: 10
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 1
+      maxSurge: 1
+  template:
+    metadata:
+      labels:
+        app_name: finanylizer
+        tier: database
+        environment: production
+        service_name: mdb-svc
+    spec:
+      initContainers:
+      - name: fix-permissions
+        image: busybox
+        command: ["sh", "-c", "chown -R 999:999 /data/db"]
+        volumeMounts:
+        - name: mdb-storage
+          mountPath: /data/db
+      containers:
+      - name: mdb
+        image: mongodb/mongodb-community-server:latest
+        imagePullPolicy: Always
+        securityContext:
+          runAsUser: 999
+          runAsGroup: 999
+        ports:
+        - containerPort: 27017
+        env:
+        - name: MONGODB_HOST
+          valueFrom:
+            secretKeyRef:
+              name: mongodb-connection
+              key: db-host
+        - name: MONGODB_PORT
+          valueFrom:
+            secretKeyRef:
+              name: mongodb-connection
+              key: db-port
+        volumeMounts:
+        - name: mdb-storage
+          mountPath: /data/db
+
+      volumes:
+      - name: mdb-storage
+        persistentVolumeClaim:
+          claimName: mdb-pvc

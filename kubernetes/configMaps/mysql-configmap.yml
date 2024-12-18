@@ -1,0 +1,9 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: mysql-configmap
+data:
+  mysql-host: mysql
+  mysql-port: "3306"
+  mysql-database: finance_analytics
+  investment-enum: "Low Risk,Conservative,Balanced,High Risk,Aggressive"

@@ -1,0 +1,52 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: enter-data-backend
+  labels:
+    app_name: finanylizer
+    tier: backend
+    environment: staging
+    service_name: enter-data-backend
+spec:
+  containers:
+    - name: enter-data-backend
+      image: kodymills395/enter-data-backend:v4
+      imagePullPolicy: Always
+      ports:
+        - containerPort: 8080
+      env:
+        - name: PORT
+          valueFrom:
+            secretKeyRef:
+              name: backend-env
+              key: port
+        - name: SECRET
+          valueFrom:
+            secretKeyRef:
+              name: backend-env
+              key: secret
+        - name: DB_HOST
+          valueFrom:
+            secretKeyRef:
+              name: mysql-credentials
+              key: db-host
+        - name: DB_PORT
+          valueFrom:
+            secretKeyRef:
+              name: mysql-credentials
+              key: db-port
+        - name: DB_USER
+          valueFrom:
+            secretKeyRef:
+              name: mysql-credentials
+              key: db-user
+        - name: DB_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: mysql-credentials
+              key: db-password
+        - name: DB_NAME
+          valueFrom:
+            secretKeyRef:
+              name: mysql-credentials
+              key: db-name

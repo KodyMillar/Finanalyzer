@@ -1,0 +1,26 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: enter-data-frontend
+  labels:
+    app_name: finanylizer
+    environment: production
+    tier: frontend
+    service_name: enter-data-frontend
+spec:
+  containers:
+    - name: enter-data-frontend
+      image: kodymills395/enter-data-frontend:v4
+      ports:
+        - containerPort: 3000
+      env:
+        - name: REACT_APP_BACKEND_HOST
+          valueFrom:
+            configMapKeyRef:
+              name: backend-endpoint
+              key: backend-host
+        - name: REACT_APP_BACKEND_PORT
+          valueFrom:
+            configMapKeyRef:
+              name: backend-endpoint
+              key: backend-port

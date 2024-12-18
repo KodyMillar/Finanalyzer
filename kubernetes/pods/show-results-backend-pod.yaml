@@ -1,0 +1,25 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: show-results-backend
+  labels:
+    app_name: finanylizer
+    tier: backend
+    environment: production
+spec:
+  containers:
+    - name: show-results-backend
+      image: kodymills395/show-results-backend:v1
+      ports:
+        - containerPort: 8090
+      env:
+        - name: DB_HOST
+          valueFrom:
+            secretKeyRef:
+              name: mongodb-connection
+              key: db-host
+        - name: DB_PORT
+          valueFrom:
+            secretKeyRef:
+              name: mongodb-connection
+              key: db-port

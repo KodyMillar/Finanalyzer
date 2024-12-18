@@ -1,0 +1,46 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: show-results-backend-deployment
+  labels:
+    app_name: finanylizer
+    tier: backend
+    environment: production
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app_name: finanylizer
+      tier: backend
+      environment: production
+  template:
+    metadata:
+      labels:
+        app_name: finanylizer
+        tier: backend
+        environment: production
+        service_name: input-backend-svc
+    spec:
+      containers:
+        - name: show-results-backend
+          image: kodymills395/show-results-backend:v1
+          ports:
+            - containerPort: 8090
+          env:
+            - name: DB_HOST
+              valueFrom:
+                secretKeyRef:
+                  name: mongodb-connection
+                  key: db-host
+            - name: DB_PORT
+              valueFrom:
+                secretKeyRef:
+                  name: mongodb-connection
+                  key: db-port
+          resources:
+            requests:
+              memory: "256Mi"
+              cpu: "250m"
+            limits:
+              memory: "512Mi"
+              cpu: "500m"

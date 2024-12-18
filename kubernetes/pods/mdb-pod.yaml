@@ -1,0 +1,30 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: mdb-pod
+  labels:
+    app_name: finanylizer
+    tier: database
+    environment: production
+    service_name: mdb-svc
+spec:
+  containers:
+  - name: mdb
+    image: mdb-service:latest
+    ports:
+    - containerPort: 80
+    env:
+    - name: MONGODB_HOST
+      valueFrom:
+        secretKeyRef:
+          name: mongodb-connection
+          key: db-host
+    - name: MONGODB_PORT
+      valueFrom:
+        secretKeyRef:
+          name: mongodb-connection
+          key: db-port
+  volumes:
+  - name: mdb-storageclass
+    persistentVolumeClaim:
+      claimName: mdb-pvc
